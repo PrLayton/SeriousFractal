@@ -5,6 +5,7 @@
         <file>icons/PartFeatureImport.xpm</file>
         <file>icons/Part_Booleans.svg</file>
         <file>icons/Part_Box.svg</file>
+        <file>icons/Part_Fractal.svg</file>
         <file>icons/Part_Chamfer.svg</file>
         <file>icons/Part_Common.svg</file>
         <file>icons/Part_Cone.svg</file>

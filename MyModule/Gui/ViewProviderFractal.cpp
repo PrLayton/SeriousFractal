@@ -109,7 +109,7 @@ bool ViewProviderFractal::loadSvg(const char* filename, float x, float y, QImage
 
 void ViewProviderFractal::updateData(const App::Property* prop)
 {
-	Fract::Fractal* pcPlaneObj = static_cast<Fract::Fractal*>(pcObject);
+	/*Fract::Fractal* pcPlaneObj = static_cast<Fract::Fractal*>(pcObject);
 	if (prop == &pcPlaneObj->XSize || prop == &pcPlaneObj->YSize) {
 		float x = pcPlaneObj->XSize.getValue();
 		float y = pcPlaneObj->YSize.getValue();
@@ -144,5 +144,5 @@ void ViewProviderFractal::updateData(const App::Property* prop)
 	}
 	else {
 		Gui::ViewProviderGeometryObject::updateData(prop);
-	}
+	}*/
 }

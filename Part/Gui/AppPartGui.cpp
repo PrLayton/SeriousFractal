@@ -32,6 +32,7 @@
 #include "ViewProviderExt.h"
 #include "ViewProviderPython.h"
 #include "ViewProviderBox.h"
+#include "ViewProviderFractal.h"
 #include "ViewProviderCurveNet.h"
 #include "ViewProviderImport.h"
 #include "ViewProviderExtrusion.h"
@@ -111,6 +112,7 @@ void PartGuiExport initPartGui()
     PartGui::ViewProviderEllipsoid          ::init();
     PartGui::ViewProviderPython             ::init();
     PartGui::ViewProviderBox                ::init();
+	PartGui::ViewProviderFractal			::init();
     PartGui::ViewProviderPrism              ::init();
     PartGui::ViewProviderRegularPolygon     ::init();
     PartGui::ViewProviderWedge              ::init();

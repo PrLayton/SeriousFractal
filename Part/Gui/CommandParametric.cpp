@@ -115,6 +115,87 @@ bool CmdPartBox::isActive(void)
 }
 
 //===========================================================================
+// Part_Box2
+//===========================================================================
+DEF_STD_CMD_A(CmdPartBox20);
+
+CmdPartBox20::CmdPartBox20()
+	: Command("Part_Box20")
+{
+	sAppModule = "Part";
+	sGroup = QT_TR_NOOP("Part");
+	sMenuText = QT_TR_NOOP("Cube");
+	sToolTipText = QT_TR_NOOP("Create a cube solid");
+	sWhatsThis = "Part_Box";
+	sStatusTip = sToolTipText;
+	sPixmap = "Part_Box";
+}
+
+void CmdPartBox20::activated(int iMsg)
+{
+	QString cmd;
+	cmd = qApp->translate("CmdPartBox", "Cube");
+	openCommand((const char*)cmd.toUtf8());
+
+	doCommand(Doc, "App.ActiveDocument.addObject(\"Part::Box\",\"Box\")");
+	cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+		.arg(qApp->translate("CmdPartBox", "Cube"));
+	doCommand(Doc, (const char*)cmd.toUtf8());
+	commitCommand();
+	updateActive();
+	doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+}
+
+bool CmdPartBox20::isActive(void)
+{
+	if (getActiveGuiDocument())
+		return true;
+	else
+		return false;
+}
+
+
+//===========================================================================
+// Part_Fractal
+//===========================================================================
+DEF_STD_CMD_A(CmdPartFractal);
+
+CmdPartFractal::CmdPartFractal()
+	: Command("Part_Fractal")
+{
+	sAppModule = "Part";
+	sGroup = QT_TR_NOOP("Part");
+	sMenuText = QT_TR_NOOP("Fractal");
+	sToolTipText = QT_TR_NOOP("Create a fractal");
+	sWhatsThis = "Part_Fractal";
+	sStatusTip = sToolTipText;
+	sPixmap = "Part_Fractal";
+}
+
+void CmdPartFractal::activated(int iMsg)
+{
+	QString cmd;
+	cmd = qApp->translate("CmdPartFractal", "Cube");
+	openCommand((const char*)cmd.toUtf8());
+
+	doCommand(Doc, "App.ActiveDocument.addObject(\"Part::Fractal\",\"Fractal\")");
+	cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+		.arg(qApp->translate("CmdPartFractal", "Fractal"));
+	doCommand(Doc, (const char*)cmd.toUtf8());
+	commitCommand();
+	updateActive();
+	doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+}
+
+bool CmdPartFractal::isActive(void)
+{
+	if (getActiveGuiDocument())
+		return true;
+	else
+		return false;
+}
+
+//===========================================================================
 // Part_Sphere
 //===========================================================================
 DEF_STD_CMD_A(CmdPartSphere);
@@ -242,6 +323,8 @@ void CreateParamPartCommands(void)
     Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
     rcCmdMgr.addCommand(new CmdPartCylinder());
     rcCmdMgr.addCommand(new CmdPartBox());
+	rcCmdMgr.addCommand(new CmdPartBox20());
+	rcCmdMgr.addCommand(new CmdPartFractal());
     rcCmdMgr.addCommand(new CmdPartSphere());
     rcCmdMgr.addCommand(new CmdPartCone());
     rcCmdMgr.addCommand(new CmdPartTorus());

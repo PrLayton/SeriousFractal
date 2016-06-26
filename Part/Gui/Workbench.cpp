@@ -60,7 +60,7 @@ Gui::MenuItem* Workbench::setupMenuBar() const
 
     Gui::MenuItem* prim = new Gui::MenuItem;
     prim->setCommand("Primitives");
-    *prim << "Part_Box" << "Part_Cylinder" << "Part_Sphere"
+	*prim << "Part_Box" << "Part_Box20" << "Part_Fractal" << "Part_Cylinder" << "Part_Sphere"
           << "Part_Cone" << "Part_Torus";
 
     Gui::MenuItem* bop = new Gui::MenuItem;
@@ -108,7 +108,7 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
 
     Gui::ToolBarItem* solids = new Gui::ToolBarItem(root);
     solids->setCommand("Solids");
-    *solids << "Part_Box" << "Part_Cylinder" << "Part_Sphere" << "Part_Cone"
+    *solids << "Part_Box" << "Part_Box20" << "Part_Fractal" << "Part_Cylinder" << "Part_Sphere" << "Part_Cone"
             << "Part_Torus" << "Part_Primitives" << "Part_Builder";
 
     Gui::ToolBarItem* tool = new Gui::ToolBarItem(root);

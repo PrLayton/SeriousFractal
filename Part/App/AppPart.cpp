@@ -28,6 +28,7 @@
 #include "OCCError.h"
 #include "TopoShape.h"
 #include "FeaturePartBox.h"
+#include "FeaturePartFractal.h"
 #include "FeaturePartBoolean.h"
 #include "FeaturePartCommon.h"
 #include "FeaturePartCut.h"
@@ -226,6 +227,7 @@ void PartExport initPart()
     Part::CustomFeaturePython   ::init();
     Part::Primitive             ::init();
     Part::Box                   ::init();
+	Part::Fractal				::init();
     Part::Spline                ::init();
     Part::Boolean               ::init();
     Part::Common                ::init();

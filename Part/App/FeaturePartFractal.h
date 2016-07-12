@@ -40,7 +40,8 @@ namespace Part
 		Fractal();
 
 		App::PropertyLength Length, Height, Width;
-
+		App::PropertyInteger Depth;
+		App::PropertyVectorList Nodes;
 
 		/** @name methods override feature */
 		//@{

@@ -127,5 +127,9 @@ if(BUILD_JTREADER)
 endif(BUILD_JTREADER)
 
 if(BUILD_MYMODULE)
-	add_subdirectory(MyModule)
+  add_subdirectory(MyModule)
 endif(BUILD_MYMODULE)
+
+if(BUILD_FRACTAL)
+  add_subdirectory(Fractal)
+endif(BUILD_FRACTAL)

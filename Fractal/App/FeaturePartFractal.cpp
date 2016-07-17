@@ -62,6 +62,7 @@ Fractal::Fractal()
 	ADD_PROPERTY_TYPE(Length, (10.0f), "Fractal", App::Prop_None, "The length of the Fractal");
 	ADD_PROPERTY_TYPE(Width, (10.0f), "Fractal", App::Prop_None, "The width of the Fractal");
 	ADD_PROPERTY_TYPE(Height, (10.0f), "Fractal", App::Prop_None, "The height of the Fractal");
+	ADD_PROPERTY_TYPE(Depth, (1), "Fractal", App::Prop_None, "The depth of the Fractal");
 }
 
 short Fractal::mustExecute() const
@@ -75,7 +76,7 @@ short Fractal::mustExecute() const
 
 //Tableaux pour les vecteurs sommets et les vecteurs des faces
 std::vector<Base::Vector3d>  sommets;
-std::vector<Base::Vector3d>  faces;
+//std::vector<Base::Vector3d>  faces;
 //Tableau pour les faces creees avec Part
 std::vector<Base::Vector3d>  partFaces;
 
@@ -84,116 +85,169 @@ Base::Vector3d  milieu(Base::Vector3d m, Base::Vector3d n){
 	double x = (m[0] + n[0]) / 2.0;
 	double y = (m[1] + n[1]) / 2.0;
 	double z = (m[2] + n[2]) / 2.0;
-		return Base::Vector3d(x, y, z);
+	return Base::Vector3d(x, y, z);
 }
 
+
+std::vector<Base::Vector3d> _nodes;
+TopoDS_Wire wire;
+std::vector<TopoDS_Face> faces;
 
 //Generation de la fractal "Triangle de Sierpinski
 void sierpin(Base::Vector3d a, Base::Vector3d b, Base::Vector3d c, Base::Vector3d d, int n, std::vector<Base::Vector3d> nodes){
-//Tant que l'iteration n'est pas arrivee au niveau final
-if (n > 0){
-	sierpin(a, milieu(a, b), milieu(a, c), milieu(a, d), n - 1, nodes);
-	sierpin(milieu(a, b), b, milieu(b, c), milieu(b, d), n - 1, nodes);
-	sierpin(milieu(a, c), milieu(b, c), c, milieu(c, d), n - 1, nodes);
-	sierpin(milieu(a, d), milieu(b, d), milieu(c, d), d, n - 1, nodes);
-}
-else{
-	//On ajoute les sommets et les faces dans les tableaux
-	nodes.push_back(a);
-	nodes.push_back(b);
-	nodes.push_back(c);
-	nodes.push_back(d);
-	//On prend le nombre de sommets du tableau
-	int ns = sommets.size();
-	/*partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2]))));
-	partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 2], sommets[ns - 1]))));
-	partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 1], sommets[ns - 3]))));
-	partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 3], sommets[ns - 2], sommets[ns - 1]))));*/
-	/*nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2]);
-	nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 2], sommets[ns - 1]);
-	nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 1], sommets[ns - 3]);
-	nodes.push_back((Base::Vector3d(sommets[ns - 3], sommets[ns - 2], sommets[ns - 1]);*/
+	//Tant que l'iteration n'est pas arrivee au niveau final
+	if (n > 0){
+		sierpin(a, milieu(a, b), milieu(a, c), milieu(a, d), n - 1, nodes);
+		sierpin(milieu(a, b), b, milieu(b, c), milieu(b, d), n - 1, nodes);
+		sierpin(milieu(a, c), milieu(b, c), c, milieu(c, d), n - 1, nodes);
+		sierpin(milieu(a, d), milieu(b, d), milieu(c, d), d, n - 1, nodes);
+	}
+	else{
+		//On ajoute les sommets et les faces dans les tableaux
+		_nodes.push_back(a);
+		_nodes.push_back(b);
+		_nodes.push_back(c);
+		_nodes.push_back(d);
+		//On prend le nombre de sommets du tableau
+		int ns = _nodes.size();
+		/*partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2]))));
+		partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 2], sommets[ns - 1]))));
+		partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 4], sommets[ns - 1], sommets[ns - 3]))));
+		partFaces.push_back(Part.Face(Part.makePolygon(Base::Vector3d(sommets[ns - 3], sommets[ns - 2], sommets[ns - 1]))));*/
+		//wire
+		faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), gp_Pnt(_nodes[ns - 3].x, _nodes[ns - 3].y, _nodes[ns - 3].z)
+			, gp_Pnt(_nodes[ns - 2].x, _nodes[ns - 2].y, _nodes[ns - 2].z), gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), Standard_True), Standard_True));
+		faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), gp_Pnt(_nodes[ns - 2].x, _nodes[ns - 2].y, _nodes[ns - 2].z)
+			, gp_Pnt(_nodes[ns - 1].x, _nodes[ns - 1].y, _nodes[ns - 1].z), gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), Standard_True), Standard_True));
+		faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), gp_Pnt(_nodes[ns - 1].x, _nodes[ns - 1].y, _nodes[ns - 1].z)
+			, gp_Pnt(_nodes[ns - 3].x, _nodes[ns - 3].y, _nodes[ns - 3].z), gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), Standard_True), Standard_True));
+		faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), gp_Pnt(_nodes[ns - 2].x, _nodes[ns - 2].y, _nodes[ns - 2].z)
+			, gp_Pnt(_nodes[ns - 1].x, _nodes[ns - 1].y, _nodes[ns - 1].z), gp_Pnt(_nodes[ns - 4].x, _nodes[ns - 4].y, _nodes[ns - 4].z), Standard_True), Standard_True));
 
-	//BRepBuilderAPI_MakeFace mkFace(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2], sommets[ns - 4]);
-}
+		/*nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2]);
+		nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 2], sommets[ns - 1]);
+		nodes.push_back(Base::Vector3d(sommets[ns - 4], sommets[ns - 1], sommets[ns - 3]);
+		nodes.push_back((Base::Vector3d(sommets[ns - 3], sommets[ns - 2], sommets[ns - 1]);*/
+
+		//BRepBuilderAPI_MakeFace mkFace(sommets[ns - 4], sommets[ns - 3], sommets[ns - 2], sommets[ns - 4]);
+	}
 }
 
 App::DocumentObjectExecReturn *Fractal::execute(void)
 {
+	faces.clear();
 	//Appel de la fonction de generation avec des valeurs prereglees(taille) et la valeur de l'utilisateur
 	//sierpin([-7, -4, 0], [0, 8, 0], [7, -4, 0], [0, 0, 11], 6)
-	sierpin(Base::Vector3d(-5, -5, -5), Base::Vector3d(5, 5, -5), Base::Vector3d(-5, 5, 5), Base::Vector3d(5, -5, 5), 3, Nodes.getValues());
+	//sierpin(Base::Vector3d(-5, -5, -5), Base::Vector3d(5, 5, -5), Base::Vector3d(-5, 5, 5), Base::Vector3d(5, -5, 5), 1, Nodes.getValues());
+	sierpin(Base::Vector3d(-Length.getValue(), -Width.getValue(), -Height.getValue()), Base::Vector3d(Length.getValue(), Width.getValue(), -Height.getValue()), Base::Vector3d(-Length.getValue(), Width.getValue(), Height.getValue()), Base::Vector3d(Length.getValue(), -Width.getValue(), Height.getValue()), Depth.getValue(), Nodes.getValues());
 
-		/*//Creation du shell avec la liste des faces
-		myShell = Part.makeShell(partFaces);
-		// Creation du polygon avec le shell
-		mySolid = Part.makeSolid(myShell);
-		// Mise a jour de l'orientation des faces
-		mySolidRev = mySolid.copy();
-		mySolidRev.reverse();
+	/*//Creation du shell avec la liste des faces
+	myShell = Part.makeShell(partFaces);
+	// Creation du polygon avec le shell
+	mySolid = Part.makeSolid(myShell);
+	// Mise a jour de l'orientation des faces
+	mySolidRev = mySolid.copy();
+	mySolidRev.reverse();
 
-		//Affichage du solide
-		Part.show(mySolidRev);*/
+	//Affichage du solide
+	Part.show(mySolidRev);*/
 
 	BRepBuilderAPI_MakePolygon poly;
-	//const
-	std::vector<Base::Vector3d> nodes = Nodes.getValues();
-	nodes.push_back(Base::Vector3d(0, 0, 0));
-	nodes.push_back(Base::Vector3d(0, 0, 1));
-	nodes.push_back(Base::Vector3d(0, 0, 3));
-	nodes.push_back(Base::Vector3d(0, 0, 5));
-	nodes.push_back(Base::Vector3d(0, 5, 0));
-	nodes.push_back(Base::Vector3d(0, 0, 8));
+	//const std::vector<Base::Vector3d> nodes = Nodes;
+	/*_nodes.push_back(Base::Vector3d(0, 0, 0));
+	_nodes.push_back(Base::Vector3d(0, 0, 1));
+	_nodes.push_back(Base::Vector3d(0, 0, 3));
+	_nodes.push_back(Base::Vector3d(0, 0, 5));
+	_nodes.push_back(Base::Vector3d(0, 5, 0));
+	_nodes.push_back(Base::Vector3d(0, 0, 8));*/
 
-	for (std::vector<Base::Vector3d>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+	/*std::string s = std::to_string(_nodes.size());
+	char const *pchar = s.c_str();
+	Base::Console().Message(pchar);
+	Base::Console().Log(pchar);*/
+
+	for (std::vector<Base::Vector3d>::const_iterator it = _nodes.begin(); it != _nodes.end(); ++it) {
 		gp_Pnt pnt(it->x, it->y, it->z);
 		poly.Add(pnt);
 	}
 
 	if (!poly.IsDone())
 		throw Base::Exception("Cannot create polygon because less than two vetices are given");
-	TopoDS_Wire wire = poly.Wire();
-	//this->Shape.setValue(wire);
+	//TopoDS_Wire wire = poly.Wire();
+	//BRepBuilderAPI_MakeFace makeFace(poly.Wire());
 
-	BRepBuilderAPI_MakeFace myFace(wire);
+	/*gp_Pnt point1 = gp_Pnt(1,0,0);
+	gp_Pnt point2 = gp_Pnt(1,1,0);
+	gp_Pnt point3 = gp_Pnt(1,0,1);*/
+	//TopoDS_Wire wire = BRepBuilderAPI_MakePolygon(, Standard_True);
+	//TopoDS_Face face = BRepBuilderAPI_MakeFace(wire, Standard_True);
+	//TopoDS_Shape s;
 
-	this->Shape.setValue(myFace);
+	/*if (makeFace.Error() == BRepBuilderAPI_FaceDone)
+	{
+	TopoDS_Face faceCurrent = makeFace.Face();
+	}
+	BRepBuilderAPI_MakeFace makeFace(faceCurrent);
+	makeFace.Add(MP.Wire());
+	if (makeFace.Error() == BRepBuilderAPI_FaceDone)
+	{
+	faceCurrent = makeFace.Face();
+	}*/
 
-	TopoDS_Face tf;
+	//this->Shape.setValue();
+
+
+
+	//TopoDS_Face tf;
 
 	//BRepBuilderAPI_MakeFace mkFace(TopoDS::Wire(sh));
 
-	Handle_Geom_Surface gs;
+	//Handle_Geom_Surface gs;
 	//Handle<Geom_Surface> dd;
 	//gs.Access = 0;
 
 	/*RepOffsetAPI_MakeOffsetShape mkOffset(this->_Shape, offset, tol, BRepOffset_Mode(offsetMode),
-        intersection ? Standard_True : Standard_False,
-        selfInter ? Standard_True : Standard_False,
-        GeomAbs_JoinType(join));
-   
-    if (!fill)
-        return res;
-#if 1
-    //s=Part.makePlane(10,10)
-    //s.makeOffsetShape(1.0,0.01,False,False,0,0,True)*/
+	intersection ? Standard_True : Standard_False,
+	selfInter ? Standard_True : Standard_False,
+	GeomAbs_JoinType(join));
 
-	BRepOffsetAPI_MakeOffsetShape myOffsetShape;
-	TopoShape ts;
+	if (!fill)
+	return res;
+	#if 1
+	//s=Part.makePlane(10,10)
+	//s.makeOffsetShape(1.0,0.01,False,False,0,0,True)*/
+
+	//BRepOffsetAPI_MakeOffsetShape myOffsetShape;
+	//TopoShape ts;
 	//myOffsetShape = ts.makeOffsetShape(1.0, 0.01, False, False, 0, 0, True);
-	const TopoDS_Shape& res = myOffsetShape.Shape();
+	//const TopoDS_Shape& res = myOffsetShape.Shape();
 
-	BRepBuilderAPI_MakeShell myShell(gs);
+	BRep_Builder builder;
+	TopoDS_Shell shell;
+	builder.MakeShell(shell);
+	/*s = std::to_string(faces.size());
+	pchar = s.c_str();
+	Base::Console().Message(pchar);
+	Base::Console().Log(pchar);*/
+	for (int i = 0; i < faces.size(); i++) {
+		builder.Add(shell, faces[i]);
+		//this->Shape.setValue(shell);
+	}
+	//this->Shape.setValue(builder.sh);
+
+	//BRepBuilderAPI_MakeShell myShell(gs);
 	//const TopoDS_Shell& td = gs.sh;
 
-	BRepBuilderAPI_MakeSolid mySolid(myShell);
-	//BRepBuilderAPI_MakeSolid mySolid(myShell);
+	/*TopoDS_Solid mysolid;
+	builder.MakeSolid(mysolid);
+	builder.Add(mysolid, shell);*/
 
-	//this->Shape.setValue(mySolid);
+	BRepBuilderAPI_MakeSolid mySolid(shell);
+	this->Shape.setValue(mySolid.Shape());
 
 
 	return App::DocumentObject::StdReturn;
-	}
+}
 
 /**
 * This method was added for backward-compatibility. In former versions

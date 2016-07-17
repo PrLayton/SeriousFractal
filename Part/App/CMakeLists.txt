@@ -86,7 +86,7 @@ SET(Features_SRCS
     FeaturePartBox.cpp
     FeaturePartBox.h
 	FeaturePartFractal.cpp
-    FeaturePartFractal.cpp
+    FeaturePartFractal.h
     FeaturePartCircle.cpp
     FeaturePartCircle.h
     FeaturePartCommon.cpp

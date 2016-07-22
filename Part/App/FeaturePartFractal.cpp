@@ -133,13 +133,90 @@ else{
 }
 }
 
+int level =3;
+int width = 3 * level;
+
+float step = 2.0 / width;
+
+float px = -1.0;
+float py = -1.0;
+float pz = 0;
+
+std::vector<Base::Vector3d>  coords;
+//std::vector<Base::Vector3d>  faces;
+
+int idx = 0;
+
+bool t = true;
+bool tx = true;
+bool ty = true;
+bool tz = true;
+float w = 0;
+
+void Sponge(){
+	for (int x = 0; x < width; x++){
+		py = -1.0;
+		for (int y = 0; y < width; y++){
+			pz = 0.0;
+			for (int z = 0; z < width; z++){
+				t = true;
+				w = width / 3;
+				while (w >= 1){
+					tx = ((int(x / w) % 3) != 1);
+					ty = ((int(y / w) % 3) != 1);
+					tz = ((int(z / w) % 3) != 1);
+					t = t && ((tx && ty) || (tx && tz) || (ty && tz));
+					w = w / 3;
+				}
+#
+				if (t == true){
+
+					coords.push_back(Base::Vector3d(px * 5, py * 5, pz * 5));
+					coords.push_back(Base::Vector3d(px * 5 + step * 5, py * 5, pz * 5));
+					coords.push_back(Base::Vector3d(px * 5 + step * 5, py * 5 + step * 5, pz * 5));
+					coords.push_back(Base::Vector3d(px * 5, py * 5 + step * 5, pz * 5));
+
+					coords.push_back(Base::Vector3d(px, py, pz + step));
+					coords.push_back(Base::Vector3d(px + step, py, pz + step));
+					coords.push_back(Base::Vector3d(px + step, py + step, pz + step));
+					coords.push_back(Base::Vector3d(px, py + step, pz + step));
+
+					faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(coords[idx].x, coords[idx].y, coords[idx].z), gp_Pnt(coords[idx + 1].x, coords[idx + 1].y, coords[idx + 1].z)
+						, gp_Pnt(coords[idx + 2].x, coords[idx + 2].y, coords[idx + 2].z), gp_Pnt(coords[idx + 3].x, coords[idx + 3].y, coords[idx + 3].z), Standard_True), Standard_True));
+					faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(coords[idx].x, coords[idx].y, coords[idx].z), gp_Pnt(coords[idx + 1].x, coords[idx + 1].y, coords[idx + 1].z)
+						, gp_Pnt(coords[idx + 5].x, coords[idx + 5].y, coords[idx + 5].z), gp_Pnt(coords[idx + 4].x, coords[idx + 4].y, coords[idx + 4].z), Standard_True), Standard_True));
+					faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(coords[idx + 1].x, coords[idx + 1].y, coords[idx + 1].z), gp_Pnt(coords[idx + 2].x, coords[idx + 2].y, coords[idx + 2].z)
+						, gp_Pnt(coords[idx + 6].x, coords[idx + 6].y, coords[idx + 6].z), gp_Pnt(coords[idx + 5].x, coords[idx + 5].y, coords[idx + 5].z), Standard_True), Standard_True));
+					faces.push_back(BRepBuilderAPI_MakeFace(BRepBuilderAPI_MakePolygon(gp_Pnt(coords[idx + 1].x, coords[idx + 1].y, coords[idx + 1].z), gp_Pnt(coords[idx + 2].x, coords[idx + 2].y, coords[idx + 2].z)
+						, gp_Pnt(coords[idx + 6].x, coords[idx + 6].y, coords[idx + 6].z), gp_Pnt(coords[idx + 5].x, coords[idx + 5].y, coords[idx + 5].z), Standard_True), Standard_True));
+					//faces.append((idx, idx + 1, idx + 2, idx + 3))
+					//faces.append((idx, idx + 1, idx + 5, idx + 4))
+					//faces.append((idx + 1, idx + 2, idx + 6, idx + 5))
+					//faces.append((idx + 2, idx + 3, idx + 7, idx + 6))
+					//faces.append((idx + 3, idx + 0, idx + 4, idx + 7))
+					//faces.append((idx + 4, idx + 5, idx + 6, idx + 7))
+					idx += 8;
+				}
+				pz += step;
+			}
+			py += step;
+		}
+		px += step;
+	}
+	width = 3 * level;
+	step = 2.0 / width;
+
+}
+
 App::DocumentObjectExecReturn *Fractal::execute(void)
 {
 	faces.clear();
 	//Appel de la fonction de generation avec des valeurs prereglees(taille) et la valeur de l'utilisateur
 	//sierpin([-7, -4, 0], [0, 8, 0], [7, -4, 0], [0, 0, 11], 6)
 	//sierpin(Base::Vector3d(-5, -5, -5), Base::Vector3d(5, 5, -5), Base::Vector3d(-5, 5, 5), Base::Vector3d(5, -5, 5), 1, Nodes.getValues());
+	
 	sierpin(Base::Vector3d(-Length.getValue(), -Width.getValue(), -Height.getValue()), Base::Vector3d(Length.getValue(), Width.getValue(), -Height.getValue()), Base::Vector3d(-Length.getValue(), Width.getValue(), Height.getValue()), Base::Vector3d(Length.getValue(), -Width.getValue(), Height.getValue()), Depth.getValue(), Nodes.getValues());
+	//Sponge();
 
 		/*//Creation du shell avec la liste des faces
 		myShell = Part.makeShell(partFaces);
